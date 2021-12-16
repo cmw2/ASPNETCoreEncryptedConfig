@@ -17,8 +17,9 @@ We use a certificate in Local Machine (with appropriate ACL on it's private keys
    1. Get it's thumbprint to be used below.
 6. Publish the EncryptorTool and copy it to the server
 7. Edit the appsettings.json file for the EncryptorTool.
-   1. Use the path to the key folder and the certificate thumbprint from above.
-   1. Fill in the path to the website's appsettings.json file.
+   1. Fill in the path to the key folder
+   2. Fill in the certificate thumbprint
+   3. Fill in the path to the website's appsettings.json file
 8. Run the EncryptorTool
 9. Restart the website's app pool.
 10. Browse to the website.  It should show the encrypted values.
