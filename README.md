@@ -24,8 +24,8 @@ We use a certificate in Local Machine (with appropriate ACL on it's private keys
 9. Restart the website's app pool.
 10. Browse to the website.  It should show the encrypted values.
 11. Edit the website's appsettings.json file
-   1. Fill in the path to the key folder, making sure to escape the backslashes: C:\\DataProtectionKeys
-   2. Fill in the certificate thumbprint
-   3. Change the EncryptionOptions:Enabled setting to true and save.
+    1. Fill in the path to the key folder
+    2. Fill in the certificate thumbprint
+    3. Change the EncryptionOptions:Enabled setting to true and save.
 12. Restart the website's app pool.
 13. Browse to the website.  It should show the decrypted values.
