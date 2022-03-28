@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -15,6 +15,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.22" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.13" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\dpapi\Pitchfork.Cryptography.CngDpapi\Pitchfork.Cryptography.CngDpapi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
