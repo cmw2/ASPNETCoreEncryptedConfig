@@ -30,7 +30,7 @@ namespace EncryptorTool
                 string plaintext = settingsHelper.Get<string>(key);
                 byte[] plaintextBlob = Encoding.UTF8.GetBytes(plaintext);
                 byte[] ciphertextBlob = protector.ProtectSecret(plaintextBlob);
-                string ciphertext = Encoding.UTF8.GetString(ciphertextBlob);
+                string ciphertext = System.Convert.ToBase64String(ciphertextBlob);
                 //string encryptedVal = $"encrypted: {settingsHelper.Get<string>(key)}";
                 settingsHelper.AddOrUpdateAppSetting<string>(
                     key,

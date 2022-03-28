@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.22" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\dpapi\Pitchfork.Cryptography.CngDpapi\Pitchfork.Cryptography.CngDpapi.csproj" />
+  </ItemGroup>
+
 </Project>

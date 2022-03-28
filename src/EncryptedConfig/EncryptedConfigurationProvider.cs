@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.DataProtection;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using Pitchfork.Cryptography.CngDpapi;
 
 namespace EncryptedConfig
 {
@@ -12,7 +13,7 @@ namespace EncryptedConfig
     {
         private readonly EncryptionOptions _options;
         private readonly IConfiguration _configuration;
-        private IDataProtector _protector;
+        //private ProtectionDescriptor _protector;
 
         public EncryptedConfigurationProvider(EncryptionOptions options, IConfiguration configuration)
         {
@@ -29,7 +30,11 @@ namespace EncryptedConfig
             {
                 foreach (string key in _options.EncryptedKeys)
                 {
-                    settings[key] = Protector.Unprotect(_configuration[key]);
+                    string ciphertext = _configuration[key];
+                    var ciphertextBlob = System.Convert.FromBase64String(ciphertext);
+                    byte[] plaintextBlob = ProtectionDescriptor.UnprotectSecret(ciphertextBlob);
+                    string plaintext = Encoding.UTF8.GetString(plaintextBlob);
+                    settings[key] = plaintext;
                 }
                 settings[ranKey] = true.ToString();
             } else
@@ -40,34 +45,36 @@ namespace EncryptedConfig
             Data = settings;
         }
 
-        private IDataProtector BuildDataProtector()
-        {
-            var provider = DataProtectionProvider.Create(
-                new DirectoryInfo(_options.KeyRingFolder),
-                configuration =>
-                {
-                    X509Store store = new X509Store(StoreLocation.LocalMachine);
-                    store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-                    var cert = store.Certificates.Find(X509FindType.FindByThumbprint, _options.CertificateThumbprint, validOnly: false)[0];
-                    store.Close();
+        //private ProtectionDescriptor BuildDataProtector()
+        //{
+        //    var cert = GetCertificate(StoreLocation.LocalMachine, _options.CertificateThumbprint);  // specify store in settings?
 
-                    configuration.SetApplicationName(_options.ApplicationName);
-                    configuration.ProtectKeysWithCertificate(cert);
-                });
-            var protector = provider.CreateProtector(_options.Purpose, _options.SubPurposes);
-            return protector;
-        }
+        //    string descriptor = "Certificate = CERTBLOB:" + Convert.ToBase64String(cert.Export(X509ContentType.Cert));
 
-        private IDataProtector Protector
-        {
-            get
-            {
-                if (_protector == null)
-                {
-                    _protector = BuildDataProtector();
-                }
-                return _protector;
-            }
-        }
+        //    var protector = new ProtectionDescriptor(descriptor);
+        //    return protector;
+        //}
+
+        //private X509Certificate2 GetCertificate(StoreLocation location, string thumprint)
+        //{
+        //    using X509Store store = new X509Store(location);
+        //    store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+        //    var cert = store.Certificates.Find(X509FindType.FindByThumbprint, thumprint, validOnly: false)[0];
+        //    store.Close();
+
+        //    return cert;
+        //}
+
+        //private ProtectionDescriptor Protector
+        //{
+        //    get
+        //    {
+        //        if (_protector == null)
+        //        {
+        //            _protector = BuildDataProtector();
+        //        }
+        //        return _protector;
+        //    }
+        //}
     }
 }
