@@ -1,0 +1,3 @@
+[submodule "src/dpapi"]
+	path = src/dpapi
+	url = https://github.com/GrabYourPitchforks/Pitchfork.Cryptography.CngDpapi.git
