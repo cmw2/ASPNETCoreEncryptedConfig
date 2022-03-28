@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.DataProtection;
+using System.Text;
 using Microsoft.Extensions.Configuration;
+using Pitchfork.Cryptography.CngDpapi;
 
 namespace EncryptorTool
 {
@@ -26,11 +27,14 @@ namespace EncryptorTool
             // Protect the payload
             foreach (string key in options.EncryptedKeys)
             {
-                string encryptedVal = protector.Protect(settingsHelper.Get<string>(key));
+                string plaintext = settingsHelper.Get<string>(key);
+                byte[] plaintextBlob = Encoding.UTF8.GetBytes(plaintext);
+                byte[] ciphertextBlob = protector.ProtectSecret(plaintextBlob);
+                string ciphertext = Encoding.UTF8.GetString(ciphertextBlob);
                 //string encryptedVal = $"encrypted: {settingsHelper.Get<string>(key)}";
                 settingsHelper.AddOrUpdateAppSetting<string>(
                     key,
-                    encryptedVal);
+                    ciphertext);
                 Console.WriteLine($"Encrypted {key}");
             }
 
@@ -38,22 +42,24 @@ namespace EncryptorTool
             Console.WriteLine("Encryption Complete");
         }
 
-        static private IDataProtector BuildDataProtector(EncryptionOptions options)
+        static private ProtectionDescriptor BuildDataProtector(EncryptionOptions options)
         {
-            var provider = DataProtectionProvider.Create(
-                new DirectoryInfo(options.KeyRingFolder),
-                configuration =>
-                {
-                    X509Store store = new X509Store(StoreLocation.LocalMachine);
-                    store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-                    var cert = store.Certificates.Find(X509FindType.FindByThumbprint, options.CertificateThumbprint, validOnly: false)[0];
-                    store.Close();
+            var cert = GetCertificate(StoreLocation.LocalMachine, options.CertificateThumbprint);  // specify store in settings?
 
-                    configuration.SetApplicationName(options.ApplicationName);
-                    configuration.ProtectKeysWithCertificate(cert);
-                });
-            var protector = provider.CreateProtector(options.Purpose, options.SubPurposes);
+            string descriptor = "Certificate = CERTBLOB:" + Convert.ToBase64String(cert.Export(X509ContentType.Cert));
+
+            var protector = new ProtectionDescriptor(descriptor);
             return protector;
+        }
+
+        static private X509Certificate2 GetCertificate(StoreLocation location, string thumprint)
+        {
+            using X509Store store = new X509Store(location);
+            store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+            var cert = store.Certificates.Find(X509FindType.FindByThumbprint, thumprint, validOnly: false)[0];
+            store.Close();
+
+            return cert;
         }
     }
 }
