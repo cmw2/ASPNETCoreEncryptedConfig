@@ -1,0 +1,29 @@
+trigger: none
+
+resources:
+  pipelines:
+    - pipeline: ci
+      source: cmw2.ASPNETCoreEncryptedConfig-ci
+      trigger:
+        branches:
+          include:
+            - master
+
+stages:
+- stage: Deploy
+  jobs:
+  - deployment: Deploy
+    displayName: 'Deploy to IIS'
+    dependsOn: []
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: IISWebAppDeploymentOnMachineGroup@0
+            displayName: 'Deploy IIS Website'
+            inputs:
+              WebSiteName: 'AppSettingsEncrypt'
+              Package: '$(PIPELINE.WORKSPACE)/ci/www/*.zip'
+              JSONFiles: appsettings.json
+              TakeAppOfflineFlag: true
+
