@@ -21,11 +21,9 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: IISWebAppDeploymentOnMachineGroup@0
-            displayName: 'Deploy IIS Website'
+          - task: unzip@0
             inputs:
-              WebSiteName: 'AppSettingsEncrypt'
-              Package: '$(PIPELINE.WORKSPACE)/ci/site/*.zip'
-              JSONFiles: appsettings.json
-              TakeAppOfflineFlag: true
+              pathToZipFile: '$(PIPELINE.WORKSPACE)/ci/site/WebAppThatNeedsSecrets.zip'
+              pathToZipFolder: 'C:\inetpub\wwwroot_appsettingsencrypt'
+          
 
