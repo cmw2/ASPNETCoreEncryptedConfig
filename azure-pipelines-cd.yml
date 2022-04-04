@@ -25,7 +25,7 @@ stages:
             displayName: 'Deploy IIS Website'
             inputs:
               WebSiteName: 'AppSettingsEncrypt'
-              Package: '$(PIPELINE.WORKSPACE)/ci/www/*.zip'
+              Package: '$(PIPELINE.WORKSPACE)/ci/site/*.zip'
               JSONFiles: appsettings.json
               TakeAppOfflineFlag: true
 
