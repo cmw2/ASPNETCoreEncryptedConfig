@@ -15,10 +15,10 @@ stages:
   - deployment: Deploy
     displayName: 'Deploy to IIS'
     dependsOn: []
-    pool:
-     name: IISEncrypt
     environment:
      name: IISEncrypt
+     resourceType: VirtualMachine
+     tags: web
     strategy:
       runOnce:
         deploy:
