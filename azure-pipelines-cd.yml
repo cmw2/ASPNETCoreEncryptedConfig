@@ -12,7 +12,7 @@ resources:
 stages:
 - stage: Deploy
   jobs:
-  - deployment: Deploy
+  - deployment: Deploy_web
     displayName: 'Deploy to IIS'
     dependsOn: []
     environment:
