@@ -20,7 +20,8 @@ stages:
      resourceType: VirtualMachine
      tags: web
     strategy:
-      runOnce:
+      rolling:
+        maxParallel: 1
         deploy:
           steps:
           # - task: unzip@0
