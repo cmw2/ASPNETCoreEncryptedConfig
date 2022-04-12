@@ -1,0 +1,28 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- main
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- script: dotnet publish -c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)
+  displayName: 'dotnet publish'
+  workingDirectory: src\EncryptorTool
+  
+# Publish a Universal Package
+- task: UniversalPackages@0
+  displayName: Universal Publish
+  inputs:
+    command: publish
+    publishDirectory: '$(Build.ArtifactStagingDirectory)'
+    vstsFeedPublish: 'DevOpsDemo/ASPNETCoreEncryptedConfig'
+    vstsFeedPackagePublish: 'EncryptorTool'
+    packagePublishDescription: 'Tool to encrypt values in App Settings files'
