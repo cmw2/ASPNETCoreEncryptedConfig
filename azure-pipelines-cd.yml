@@ -45,7 +45,7 @@ stages:
           - task: CmdLine@2
             displayName: Encrypt AppSettings
             inputs:
-              script: 'EncryptorTool.exe EncryptionOptions:ReadFromSettingsPath="C:\inetpub\wwwroot_appsettingsencrypt\appsettings.json" EncryptionOptions:WriteToSettingsPath="C:\inetpub\wwwroot_appsettingsencrypt\appsettings.json" EncryptionOptions:CertificateThumbprint=3fcb6f3fd0857b9fdf8097c6fc60daedae93204c'
+              script: 'EncryptorTool.exe EncryptionOptions:ReadFromSettingsPath="C:\inetpub\wwwroot_appsettingsencrypt\appsettings.json" EncryptionOptions:WriteToSettingsPath="C:\inetpub\wwwroot_appsettingsencrypt\appsettings.json" EncryptionOptions:EncryptedKeys:0=SecretKey EncryptionOptions:CertificateThumbprint=3fcb6f3fd0857b9fdf8097c6fc60daedae93204c'
               workingDirectory: '$(Build.SourcesDirectory)\encTool'
               failOnStderr: true
             
