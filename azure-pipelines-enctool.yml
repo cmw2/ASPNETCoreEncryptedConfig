@@ -4,7 +4,13 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- main
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - src/EncryptorTool
+    - azure-pipelines-enctool.yml
 
 pool:
   vmImage: windows-latest
@@ -21,8 +27,10 @@ steps:
 - task: UniversalPackages@0
   displayName: Universal Publish
   inputs:
-    command: publish
+    command: 'publish'
     publishDirectory: '$(Build.ArtifactStagingDirectory)'
+    feedsToUsePublish: 'internal'
     vstsFeedPublish: 'DevOpsDemo/ASPNETCoreEncryptedConfigPackages'
-    vstsFeedPackagePublish: 'EncryptorTool'
+    vstsFeedPackagePublish: 'encryptor-tool'
+    versionOption: 'patch'
     packagePublishDescription: 'Tool to encrypt values in App Settings files'
