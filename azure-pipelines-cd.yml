@@ -24,10 +24,16 @@ stages:
         maxParallel: 1
         deploy:
           steps:
-          # - task: unzip@0
-          #   inputs:
-          #     pathToZipFile: '$(PIPELINE.WORKSPACE)/ci/site/WebAppThatNeedsSecrets.zip'
-          #     pathToZipFolder: 'C:\inetpub\wwwroot_appsettingsencrypt'
+          - task: UniversalPackages@0
+            displayName: 'Universal download'
+            inputs:
+              command: 'download'
+              downloadDirectory: '$(Build.SourcesDirectory)\encTool'
+              feedsToUse: 'internal'
+              vstsFeed: 'DevOpsDemo/ASPNETCoreEncryptedConfigPackages'
+              vstsFeedPackage: 'encryptor-tool'
+              vstsPackageVersion: '*'
+              
           - task: IISWebAppDeploymentOnMachineGroup@0
             displayName: 'Deploy IIS Website'
             inputs:
@@ -35,4 +41,16 @@ stages:
               Package: '$(PIPELINE.WORKSPACE)/ci/site/*.zip'
               JSONFiles: appsettings.json
               TakeAppOfflineFlag: true
-
+              
+          - task: ShellScript@2
+            displayName: Encrypt AppSettings
+            inputs:
+              scriptPath: 'EncryptorTool.exe'
+              args: EncryptionOptions:ReadFromSettingsPath="C:\inetpub\wwwroot_appsettingsencrypt\appsettings.json" 
+                    EncryptionOptions:WriteToSettingsPath="C:\inetpub\wwwroot_appsettingsencrypt\appsettings.json"
+                    EncryptionOptions:EncryptedKeys:0=SecretKey
+                    EncryptionOptions:CertificateThumbprint=3fcb6f3fd0857b9fdf8097c6fc60daedae93204c
+              disableAutoCwd: true
+              cwd: '$(Build.SourcesDirectory)\encTool'
+              failOnStandardError: true
+          
