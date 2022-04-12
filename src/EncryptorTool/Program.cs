@@ -24,6 +24,7 @@ namespace EncryptorTool
             var settingsHelper = new SettingsHelper();
             settingsHelper.ReadFromFile(options.ReadFromSettingsPath);
 
+            int keyNum = -1;
             // Protect the payload
             foreach (string key in options.EncryptedKeys)
             {
@@ -35,9 +36,16 @@ namespace EncryptorTool
                 settingsHelper.AddOrUpdateAppSetting<string>(
                     key,
                     ciphertext);
+                settingsHelper.AddOrUpdateAppSetting<string>(
+                    $"EncryptionOptions:EncryptedKeys:{++keyNum}",
+                    key);
                 Console.WriteLine($"Encrypted {key}");
             }
 
+            settingsHelper.AddOrUpdateAppSetting<bool>(
+                    $"EncryptionOptions:Enabled",
+                    !(keyNum == -1));
+            
             settingsHelper.WriteToFile(options.WriteToSettingsPath);
             Console.WriteLine("Encryption Complete");
         }
