@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+	<PublishSingleFile>true</PublishSingleFile>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <UserSecretsId>e92d50e3-04f2-4f58-b1bc-55b0c184281d</UserSecretsId>
   </PropertyGroup>
 
