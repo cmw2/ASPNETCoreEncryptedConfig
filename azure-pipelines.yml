@@ -10,6 +10,7 @@ trigger:
   paths:
     exclude:
     - src/EncryptorTool
+    - azure-pipelines-enctool.yml
 
 pool:
   vmImage: 'windows-latest'
