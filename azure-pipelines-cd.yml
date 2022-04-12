@@ -1,0 +1,52 @@
+trigger: none
+
+resources:
+  pipelines:
+    - pipeline: ci
+      source: cmw2.ASPNETCoreEncryptedConfig-ci
+      trigger:
+        branches:
+          include:
+            - main
+
+stages:
+- stage: Deploy
+  jobs:
+  - deployment: Deploy_web
+    displayName: 'Deploy to IIS'
+    dependsOn: []
+    environment:
+     name: IISEncrypt
+     resourceType: VirtualMachine
+     tags: web
+    strategy:
+      rolling:
+        maxParallel: 1
+        deploy:
+          steps:
+          - task: UniversalPackages@0
+            displayName: 'Universal download'
+            inputs:
+              command: 'download'
+              downloadDirectory: '$(Build.SourcesDirectory)\encTool'
+              feedsToUse: 'internal'
+              vstsFeed: 'DevOpsDemo/ASPNETCoreEncryptedConfigPackages'
+              vstsFeedPackage: 'encryptor-tool'
+              vstsPackageVersion: '*'
+              
+          - task: IISWebAppDeploymentOnMachineGroup@0
+            displayName: 'Deploy IIS Website'
+            inputs:
+              WebSiteName: 'AppSettingsEncrypt'
+              Package: '$(PIPELINE.WORKSPACE)/ci/site/*.zip'
+              JSONFiles: appsettings.json
+              TakeAppOfflineFlag: true
+              
+          - task: CmdLine@2
+            displayName: Encrypt AppSettings
+            inputs:
+              script: 'EncryptorTool.exe EncryptionOptions:ReadFromSettingsPath="C:\inetpub\wwwroot_appsettingsencrypt\appsettings.json" EncryptionOptions:WriteToSettingsPath="C:\inetpub\wwwroot_appsettingsencrypt\appsettings.json" EncryptionOptions:EncryptedKeys:0=SecretKey EncryptionOptions:CertificateThumbprint=3fcb6f3fd0857b9fdf8097c6fc60daedae93204c'
+              workingDirectory: '$(Build.SourcesDirectory)\encTool'
+              failOnStderr: true
+            
+          
