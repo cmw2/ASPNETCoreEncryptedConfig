@@ -23,6 +23,6 @@ steps:
   inputs:
     command: publish
     publishDirectory: '$(Build.ArtifactStagingDirectory)'
-    vstsFeedPublish: 'DevOpsDemo/ASPNETCoreEncryptedConfig'
+    vstsFeedPublish: 'DevOpsDemo/ASPNETCoreEncryptedConfigPackages'
     vstsFeedPackagePublish: 'EncryptorTool'
     packagePublishDescription: 'Tool to encrypt values in App Settings files'
